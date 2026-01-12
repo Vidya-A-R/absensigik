@@ -20,7 +20,7 @@
         html, body { 
             width: 100%; 
             height: 100%;
-            overflow-x: hidden;
+            overflow: hidden;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
         
@@ -64,13 +64,14 @@
             font-size: 14px;
         }
         
-        /* Iframe */
+        /* Iframe - Fixed for mobile */
         iframe {
-            width: 1px;
-            min-width: 100%;
+            width: 100%;
+            height: 100vh;
+            height: 100dvh; /* Dynamic viewport height for mobile */
             border: none;
-            min-height: 100vh;
             display: block;
+            -webkit-overflow-scrolling: touch;
         }
         
         /* Error State */
@@ -91,12 +92,6 @@
         
         .iframe-error.show {
             display: flex;
-        }
-        
-        .iframe-error i {
-            font-size: 48px;
-            color: #ef4444;
-            margin-bottom: 16px;
         }
         
         .iframe-error h2 {
@@ -138,13 +133,12 @@
         <button onclick="reloadIframe()">Coba Lagi</button>
     </div>
     
-    <!-- Main Iframe -->
+    <!-- Main Iframe - Removed scrolling="no" -->
     <iframe 
         id="gasIframe"
         src="https://script.google.com/macros/s/AKfycbwEMwmg7GFUmfTo8yMT3ZqWcMeY61iRBOe9czauJp5coJOivr0pE_oXu5AOCtOrtHZpHQ/exec" 
         allow="geolocation; camera; microphone; clipboard-read; clipboard-write"
         allowfullscreen
-        scrolling="no"
         onload="handleIframeLoad()"
         onerror="handleIframeError()">
     </iframe>
@@ -156,7 +150,6 @@
         
         // Handle iframe load
         function handleIframeLoad() {
-            // Hide loading after small delay (biar content settle)
             setTimeout(() => {
                 loading.classList.add('hidden');
             }, 500);
@@ -175,31 +168,19 @@
             iframe.src = iframe.src;
         }
         
-        // Listen for height updates from iframe
-        window.addEventListener('message', function(e) {
-            // Validate origin (optional security)
-            // if (e.origin !== 'https://script.google.com') return;
-            
-            if (e.data && e.data.iframeHeight) {
-                iframe.style.height = e.data.iframeHeight + 'px';
-            }
-        });
-        
         // Fallback: hide loading after timeout
         setTimeout(() => {
             if (!loading.classList.contains('hidden')) {
                 loading.classList.add('hidden');
             }
-        }, 10000); // 10 detik timeout
+        }, 10000);
         
-        // Handle visibility change (refresh data when tab becomes visible)
+        // Handle visibility change
         document.addEventListener('visibilitychange', function() {
             if (document.visibilityState === 'visible') {
-                // Kirim message ke iframe bahwa tab aktif lagi
                 iframe.contentWindow.postMessage({ type: 'tabVisible' }, '*');
             }
         });
     </script>
 </body>
 </html>
-
