@@ -3,202 +3,35 @@
 <head>
     <meta name="robots" content="noindex, nofollow">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#2563eb">
     <title>Absensi GIK UGM</title>
-    
-    <!-- Favicon (optional) -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
-    
     <style>
-        * { 
-            margin: 0; 
-            padding: 0; 
-            box-sizing: border-box; 
+        *{margin:0;padding:0;box-sizing:border-box}
+        html,body{
+            width:100%;
+            height:100%;
+            overflow:hidden;
+            background:#f8fafc;
         }
-        
-        html, body { 
-            width: 100%; 
-            height: 100%;
-            overflow: hidden;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            /* Prevent pull-to-refresh */
-            overscroll-behavior: none;
-        }
-        
-        /* Loading State */
-        .iframe-loading {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: #f8fafc;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            transition: opacity 0.3s ease;
-        }
-        
-        .iframe-loading.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-        
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid #e2e8f0;
-            border-top-color: #2563eb;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        .loading-text {
-            margin-top: 16px;
-            color: #64748b;
-            font-size: 14px;
-        }
-        
-        /* Iframe Wrapper - Key fix for Android */
-        .iframe-wrapper {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            overflow: auto;
-            -webkit-overflow-scrolling: touch;
-            touch-action: pan-y;
-        }
-        
-        /* Iframe */
-        iframe {
-            width: 100%;
-            height: 100%;
-            min-height: 100vh;
-            min-height: 100dvh;
-            border: none;
-            display: block;
-            touch-action: pan-y;
-        }
-        
-        /* Error State */
-        .iframe-error {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: #f8fafc;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 20px;
-            z-index: 10000;
-        }
-        
-        .iframe-error.show {
-            display: flex;
-        }
-        
-        .iframe-error h2 {
-            color: #1e293b;
-            margin-bottom: 8px;
-        }
-        
-        .iframe-error p {
-            color: #64748b;
-            margin-bottom: 24px;
-        }
-        
-        .iframe-error button {
-            padding: 12px 24px;
-            background: #2563eb;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            cursor: pointer;
-        }
-        
-        .iframe-error button:hover {
-            background: #1d4ed8;
+        iframe{
+            position:fixed;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            border:none;
         }
     </style>
 </head>
 <body>
-    <!-- Loading State -->
-    <div class="iframe-loading" id="iframeLoading">
-        <div class="spinner"></div>
-        <p class="loading-text">Memuat aplikasi...</p>
-    </div>
-    
-    <!-- Error State -->
-    <div class="iframe-error" id="iframeError">
-        <h2>Gagal Memuat</h2>
-        <p>Terjadi kesalahan saat memuat aplikasi.</p>
-        <button onclick="reloadIframe()">Coba Lagi</button>
-    </div>
-    
-    <!-- Iframe Wrapper -->
-    <div class="iframe-wrapper">
-        <iframe 
-            id="gasIframe"
-            src="https://script.google.com/macros/s/AKfycbwEMwmg7GFUmfTo8yMT3ZqWcMeY61iRBOe9czauJp5coJOivr0pE_oXu5AOCtOrtHZpHQ/exec" 
-            allow="geolocation; camera; microphone; clipboard-read; clipboard-write"
-            allowfullscreen
-            onload="handleIframeLoad()"
-            onerror="handleIframeError()">
-        </iframe>
-    </div>
-
-    <script>
-        const iframe = document.getElementById('gasIframe');
-        const loading = document.getElementById('iframeLoading');
-        const error = document.getElementById('iframeError');
-        
-        // Handle iframe load
-        function handleIframeLoad() {
-            setTimeout(() => {
-                loading.classList.add('hidden');
-            }, 500);
-        }
-        
-        // Handle iframe error
-        function handleIframeError() {
-            loading.classList.add('hidden');
-            error.classList.add('show');
-        }
-        
-        // Reload iframe
-        function reloadIframe() {
-            error.classList.remove('show');
-            loading.classList.remove('hidden');
-            iframe.src = iframe.src;
-        }
-        
-        // Fallback: hide loading after timeout
-        setTimeout(() => {
-            if (!loading.classList.contains('hidden')) {
-                loading.classList.add('hidden');
-            }
-        }, 10000);
-        
-        // Handle visibility change
-        document.addEventListener('visibilitychange', function() {
-            if (document.visibilityState === 'visible') {
-                iframe.contentWindow.postMessage({ type: 'tabVisible' }, '*');
-            }
-        });
-    </script>
+    <iframe 
+        src="https://script.google.com/macros/s/AKfycbwEMwmg7GFUmfTo8yMT3ZqWcMeY61iRBOe9czauJp5coJOivr0pE_oXu5AOCtOrtHZpHQ/exec" 
+        allow="geolocation; camera; microphone; clipboard-read; clipboard-write"
+        allowfullscreen>
+    </iframe>
 </body>
 </html>
